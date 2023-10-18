@@ -148,25 +148,27 @@ class Redmage:
 
     def _process_form(self, form_data: FormData, fn: Callable) -> Any:
         serializer = self._get_body_serializer_class(fn)
-        body = {}
-        for k, v in form_data.items():
-            body[k] = v
+        body = dict(form_data.items())
         if body and not serializer:
             raise RedmageError("The request has a body but no serializer was provided")
-        if body and serializer:
+        if body:
             return serializer(**body) if body else None
         return body
 
     def _get_body_serializer_class(self, fn: Callable) -> Optional[Type]:
         params = signature(fn).parameters
-        for param_name, param_value in params.items():
-            if (
-                param_name != "self"
-                and param_value.default == Parameter.empty
-                and param_value.kind == Parameter.POSITIONAL_ONLY
-            ):
-                return param_value.annotation
-        return None
+        return next(
+            (
+                param_value.annotation
+                for param_name, param_value in params.items()
+                if (
+                    param_name != "self"
+                    and param_value.default == Parameter.empty
+                    and param_value.kind == Parameter.POSITIONAL_ONLY
+                )
+            ),
+            None,
+        )
 
     def _get_target_method(self, name: str, fn: Callable) -> Callable[..., Target]:
         def target_method(instance: Component, *args: Any, **kwargs: Any) -> Target:

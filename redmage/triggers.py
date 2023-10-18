@@ -21,9 +21,7 @@ class TriggerModifier:
             return f"{self.modifier}:{self.milliseconds}ms"
         if self.threshold:
             return f"{self.modifier}:{self.threshold}"
-        if self.selector:
-            return f"{self.modifier}:{self.selector}"
-        return self.modifier
+        return f"{self.modifier}:{self.selector}" if self.selector else self.modifier
 
     def __str__(self) -> str:
         return self.create_modifier()

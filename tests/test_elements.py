@@ -9,7 +9,7 @@ app = Redmage()
 
 class TestComponent(Component):
     async def render(self):
-        return Div(f"Hello World")
+        return Div("Hello World")
 
     @property
     def id(self) -> str:

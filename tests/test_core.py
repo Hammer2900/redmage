@@ -13,7 +13,7 @@ from redmage.types import HTMXClass, HTMXHeaders, HTMXSwap
 
 
 def test_sanity():
-    assert True
+    pass
 
 
 def test_redmage_create_app():
@@ -221,13 +221,16 @@ def test_redmage_register_component_with_delete_target_with_args():
 def test_redmage_register_component_nested():
     app = Redmage()
 
+
+
     class NestedComponent(Component):
         async def render(self):
-            return Div(f"Hello World")
+            return Div("Hello World")
 
         @property
         def id(self) -> str:
             return "NestedComponent-1"
+
 
     class TestComponent(Component, routes=("/",)):
         async def render(self):
@@ -316,16 +319,16 @@ def test_redmage_register_component_with_annotations():
 def test_redmage_create_get_target():
     app = Redmage()
 
+
+
     class TestComponent(Component):
         async def render(self):
-            return Div(
-                f"Hello World",
-                target=self.test_target(1, param2="test"),
-            )
+            return Div("Hello World", target=self.test_target(1, param2="test"))
 
         @Target.get
         def test_target(self, param1: int, param2: str = "init"):
             ...
+
 
     client = TestClient(app.starlette)
     response = client.get("/TestComponent/1/test_target/0/?test_target__param2=init")
@@ -350,16 +353,16 @@ def test_redmage_create_get_target_with_optional_parameter():
 
     register_url_convertor("Optional[int]", OptionalInt())
 
+
+
     class TestComponent(Component):
         async def render(self):
-            return Div(
-                f"Hello World",
-                target=self.test_target(1, param2=2),
-            )
+            return Div("Hello World", target=self.test_target(1, param2=2))
 
         @Target.get
         def test_target(self, param1: int, param2: "Optional[int]" = None):
             ...
+
 
     client = TestClient(app.starlette)
     response = client.get("/TestComponent/1/test_target/1/?test_target__param2=None")
@@ -373,18 +376,18 @@ def test_redmage_create_get_target_with_optional_parameter():
 def test_redmage_create_get_target_with_annotation():
     app = Redmage()
 
+
+
     class TestComponent(Component):
         test_annotation: str
 
         async def render(self):
-            return Div(
-                f"Hello World",
-                target=self.test_target(1, param2="test"),
-            )
+            return Div("Hello World", target=self.test_target(1, param2="test"))
 
         @Target.get
         def test_target(self, param1: int, param2: str = "init"):
             ...
+
 
     client = TestClient(app.starlette)
     response = client.get(
@@ -400,16 +403,16 @@ def test_redmage_create_get_target_with_annotation():
 def test_redmage_create_post_target():
     app = Redmage()
 
+
+
     class TestComponent(Component):
         async def render(self):
-            return Div(
-                f"Hello World",
-                target=self.test_target(self.param1),
-            )
+            return Div("Hello World", target=self.test_target(self.param1))
 
         @Target.post
         def test_target(self, test_id: int):
             self.param1 = test_id
+
 
     client = TestClient(app.starlette)
     response = client.post("/TestComponent/1/test_target/4")
@@ -423,10 +426,12 @@ def test_redmage_create_post_target():
 def test_redmage_create_post_target_swap():
     app = Redmage()
 
+
+
     class TestComponent(Component):
         async def render(self):
             return Div(
-                f"Hello World",
+                "Hello World",
                 target=self.test_target(1, "bar"),
                 swap=HTMXSwap.INNER_HTML,
             )
@@ -434,6 +439,7 @@ def test_redmage_create_post_target_swap():
         @Target.post
         def test_target(self, test_id: int, test: str = "foo"):
             ...
+
 
     client = TestClient(app.starlette)
     response = client.post("/TestComponent/1/test_target/1")
@@ -447,17 +453,16 @@ def test_redmage_create_post_target_swap():
 def test_redmage_create_post_target_indicator():
     app = Redmage()
 
+
+
     class TestComponent(Component):
         async def render(self):
-            return Div(
-                f"Hello World",
-                target=self.test_target(),
-                indicator=True,
-            )
+            return Div("Hello World", target=self.test_target(), indicator=True)
 
         @Target.post
         def test_target(self):
             ...
+
 
     client = TestClient(app.starlette)
     response = client.post("/TestComponent/1/test_target")
@@ -517,19 +522,25 @@ def test_redmage_form_without_serializer():
 def test_redmage_component_that_returns_another_component():
     app = Redmage()
 
+
+
     class ChildComponent(Component):
         async def render(self):
-            return Div(f"Hello Child")
+            return Div("Hello Child")
+
+
+
 
     class TestComponent(Component):
         async def render(self):
-            return Div(f"Hello World")
+            return Div("Hello World")
 
         @Target.get
         def test_target(self):
             child = ChildComponent()
             child._id = "ChildComponent-1"
             return child
+
 
     client = TestClient(app.starlette)
     response = client.get("/TestComponent/1/test_target")
@@ -540,19 +551,25 @@ def test_redmage_component_that_returns_another_component():
 def test_redmage_component_that_returns_multiple_components():
     app = Redmage()
 
+
+
     class ChildComponent(Component):
         async def render(self):
-            return Div(f"Hello Child")
+            return Div("Hello Child")
+
+
+
 
     class TestComponent(Component):
         async def render(self):
-            return Div(f"Hello World")
+            return Div("Hello World")
 
         @Target.get
         def test_target(self):
             child = ChildComponent()
             child._id = "ChildComponent-1"
             return child, child
+
 
     client = TestClient(app.starlette)
     response = client.get("/TestComponent/1/test_target")
@@ -566,19 +583,22 @@ def test_redmage_component_that_returns_multiple_components():
 def test_redmage_component_that_returns_headers_in_the_options_dict():
     app = Redmage()
 
+
+
     class TestComponent(Component):
         async def render(self):
-            return Div(f"Hello World")
+            return Div("Hello World")
 
         @Target.get
         def test_target(self):
-            return Div(f"Hello World")
+            return Div("Hello World")
 
         @staticmethod
         def build_response(content: Any) -> HTMLResponse:
             return HTMLResponse(
                 content=content, headers={HTMXHeaders.HX_LOCATION: "test"}
             )
+
 
     client = TestClient(app.starlette)
     response = client.get("/TestComponent/1/test_target")
@@ -595,13 +615,16 @@ def test_redamge_component_with_render_extenstion():
 
     Component.add_render_extension(extension=extension)
 
+
+
     class TestComponent(Component):
         async def render(self, extension=extension):
-            return extension(Div(f"Hello World"))
+            return extension(Div("Hello World"))
 
         @Target.get
         def test_target(self):
             ...
+
 
     client = TestClient(app.starlette)
     response = client.get("/TestComponent/1/test_target")
@@ -621,13 +644,16 @@ def test_redamge_component_with_render_extenstion_var_keyword():
 
     Component.add_render_extension(extension=extension)
 
+
+
     class TestComponent(Component):
         async def render(self, **exts):
-            return exts["extension"](Div(f"Hello World"))
+            return exts["extension"](Div("Hello World"))
 
         @Target.get
         def test_target(self):
             ...
+
 
     client = TestClient(app.starlette)
     response = client.get("/TestComponent/1/test_target")

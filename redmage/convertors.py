@@ -5,7 +5,7 @@ class BoolConvertor(Convertor):
     regex = "True|False"
 
     def convert(self, value: str) -> bool:
-        return True if value == "True" else False
+        return value == "True"
 
     def to_string(self, value: bool) -> str:
         return "True" if value else "False"

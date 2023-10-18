@@ -18,14 +18,12 @@ class Todo:
 
 def get_todo(id):
     cur.execute("SELECT * FROM todos WHERE id = ?", (id,))
-    todo = Todo(*cur.fetchone())
-    return todo
+    return Todo(*cur.fetchone())
 
 
 def get_todos():
     cur.execute("SELECT * FROM todos")
-    todos = [Todo(*todo) for todo in cur.fetchall()]
-    return todos
+    return [Todo(*todo) for todo in cur.fetchall()]
 
 
 def create_todo(message, finished):
