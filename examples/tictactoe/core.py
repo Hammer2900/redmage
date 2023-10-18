@@ -47,13 +47,14 @@ class Board(Component):
     async def render(self):
         squares = []
         for i, row in enumerate(game.board_state):
-            for j, cell in enumerate(row):
-                squares.append(square(self, i, j, cell, self.game_over or self.draw))
-
+            squares.extend(
+                square(self, i, j, cell, self.game_over or self.draw)
+                for j, cell in enumerate(row)
+            )
         if self.game_over:
             message_content = f"game over, {game.current_turn} won!"
         elif self.draw:
-            message_content = f"Game is a draw!"
+            message_content = "Game is a draw!"
         else:
             message_content = f"current turn: {game.current_turn}"
 
@@ -84,7 +85,7 @@ class Board(Component):
 
 
 def square(board, x, y, val, disable):
-    disable = True if disable or val in (Players.X, Players.O) else False
+    disable = bool(disable or val in (Players.X, Players.O))
     cell_style = f"grid-row: {x + 1}; grid-column: {y + 1};"
     cell_val = f"{val}"
 

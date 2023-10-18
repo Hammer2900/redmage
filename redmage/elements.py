@@ -43,14 +43,10 @@ class Element:
 
             return inner
 
-        self.content = list(
-            [
-                _async_helper(c)
-                if isinstance(c, Element) or isinstance(c, Component)
-                else c
-                for c in content
-            ]
-        )
+        self.content = [
+            _async_helper(c) if isinstance(c, (Element, Component)) else c
+            for c in content
+        ]
         self.swap = swap
         self.target = target
         self.trigger = trigger
